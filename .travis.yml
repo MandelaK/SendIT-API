@@ -7,12 +7,28 @@ python:
 install: 
   - pip install -r requirements.txt
   - pip install coveralls
+  - npm install
+
+env:
+  global:
+    - CC_TEST_REPORTER_ID=f27527212331ddf08b0b63d2afa80d8dd6e8c0dda2d752b2114f0f1f0b8f531f
+
+services:
+  - postgresql
   
+ before_script:  # code coverage tool
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
 script:
   - pytest
+  - flake8 tabbycat
+  - coverage run tabbycat/manage.py test -v 2 --exclude-tag=selenium
 
 after script:
   - coveralls
+  - coverage xml
 
 after success:
   - codecov
