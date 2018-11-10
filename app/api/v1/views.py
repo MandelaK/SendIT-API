@@ -29,3 +29,14 @@ class GenericParcel(Resource):
                                          destination, weight, pickup)
         if response == 201:
             return {"Success": "Successfully added delivery"}, 201
+
+
+class SpecificParcel(Resource):
+    """This class contains methods for manipulating a specific parcel"""
+
+    def get(self, id):
+        """This method should return a parcel if we are sent it's id"""
+        response = parcel_obj.get_parcel(id)
+        if response == 404:
+            return {"message": "Parcel does not exist"}
+        return response, 200
