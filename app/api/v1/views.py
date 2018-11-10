@@ -40,3 +40,17 @@ class SpecificParcel(Resource):
         if response == 404:
             return {"message": "Parcel does not exist"}
         return response, 200
+
+
+class Cancel(Resource):
+    """This class is for cancelling a specific delivery order"""
+
+    def put(self, id):
+        """This method is for cancelling a specific delivery"""
+        response = parcel_obj.cancel(id)
+        if response == 200:
+            return {"Success": "Delivery {} was cancelled".format(id)}
+        elif response == 400:
+            return {"Error": "Parcel has already been delivered."}
+        else:
+            return {"Error": "Parcel not found"}

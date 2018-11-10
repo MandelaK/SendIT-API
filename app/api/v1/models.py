@@ -79,3 +79,15 @@ class Parcel(object):
         if not p:
             return 404
         return p[0], 200
+
+    def cancel(self, id):
+        """Defines the method for deleting a specific delivery from the
+        database"""
+        p = [parcel for parcel in self.db if parcel['id'] == id]
+        if not p:
+            return 404
+        elif p[0]['status'] is not 'delivered':
+            p[0].update({"status": "cancelled"})
+            return 200
+        else:
+            return 400
