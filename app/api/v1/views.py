@@ -10,7 +10,6 @@ class GenericParcel(Resource):
     any specificity."""
 
     def get(self):
-        """This will be called when the user wants to get all delivery orders"""
         parcels = parcel_obj.get_all()
         return parcels, 200
 
@@ -28,7 +27,7 @@ class GenericParcel(Resource):
         response = parcel_obj.add_parcel(sender, user_id, recipient,
                                          destination, weight, pickup)
         if response == 201:
-            return {"Success": "Successfully added delivery"}, 201
+            return {"Success": "Successfully added your delivery"}, 201
 
 
 class SpecificParcel(Resource):
@@ -40,6 +39,26 @@ class SpecificParcel(Resource):
         if response == 404:
             return {"message": "Parcel does not exist"}
         return response, 200
+
+        # for parcel in parcels:
+        #     if parcel['id'] == id:
+        #         #change the destination
+        #         pass
+        #     else:
+        #         return{"message" : "No such delivery was found"}, 400
+
+
+class User(Resource):
+    """This class represents the user and what actions they can do to their
+    parcels"""
+
+    def get(self, user_id):
+        """This method gets all deliveries sent by a user"""
+        p = parcel_obj.get_theirs(user_id)
+        if p == 404:
+            return {"Error": "No deliveries by user"}, 404
+        else:
+            return {"Here are the deliveries by user": p}, 200
 
 
 class Destination(Resource):

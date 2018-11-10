@@ -92,6 +92,17 @@ class Parcel(object):
         else:
             return 400
 
+    def get_theirs(self, user_id):
+        """"Defines the method for getting all deliveries from a specific
+        sender"""
+        orders = []
+        p = [parcel for parcel in self.db if parcel['user_id'] == user_id]
+        if p:
+            orders.append(p)
+            return orders, 200
+        else:
+            return 404
+
     def change_location(self, id, location):
         """Defines the method for changing the
         current location of a delivery"""
