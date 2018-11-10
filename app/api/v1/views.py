@@ -9,6 +9,11 @@ class GenericParcel(Resource):
     """This class contains generic parcels without
     any specificity."""
 
+    def get(self):
+        """This will be called when the user wants to get all delivery orders"""
+        parcels = parcel_obj.get_all()
+        return parcels, 200
+
     def post(self):
         """This method is for adding a delivery to our database."""
 

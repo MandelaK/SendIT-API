@@ -67,3 +67,7 @@ class Parcel(object):
 
         self.db.append(data)
         return 201
+
+    def get_all(self):
+        """Defines the method to get all parcel deliveries GET /parcels"""
+        return self.db, 200
