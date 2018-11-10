@@ -7,6 +7,7 @@ from run import app
 parcel = {
     'id': 1,
     'sender': 'Mandela',
+    'user_id': 102,
     'recipient': 'Jane',
     'destination': 'Heaven',
     'weight': '69',
@@ -56,10 +57,10 @@ class TestValidRequest(ParcelTestCase):
                               content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
-    # def test_we_can_get_parcels_by_one_user(self):
-    #     res = self.client.get('/api/v1/users/id/parcels', data=json.dumps(self.parcel),
-    #                           content_type='application/json')
-    #     self.assertEqual(res.status_code, 200)
+    def test_we_can_get_parcels_by_one_user(self):
+        res = self.client.get('/api/v1/users/104/parcels', data=json.dumps(self.parcel),
+                              content_type='application/json')
+        self.assertEqual(res.status_code, 200)
 
     def test_we_successfully_change_location(self):
         res = self.client.put('/api/v1/admin/location/1', data=json.dumps(self.parcel),
