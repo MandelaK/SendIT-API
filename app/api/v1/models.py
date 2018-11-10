@@ -92,6 +92,16 @@ class Parcel(object):
         else:
             return 400
 
+    def change_location(self, id, location):
+        """Defines the method for changing the
+        current location of a delivery"""
+        p = [parcel for parcel in self.db if parcel['id'] == id]
+        if not p:
+            return 404
+        else:
+            p[0].update({"location": location})
+            return 201
+
     def change_destination(self, id, destination):
         """We use this method to change the destination of the requested delivery"""
         p = [parcel for parcel in self.db if parcel['id'] == id]
