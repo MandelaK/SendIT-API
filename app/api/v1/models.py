@@ -91,3 +91,14 @@ class Parcel(object):
             return 200
         else:
             return 400
+
+    def change_destination(self, id, destination):
+        """We use this method to change the destination of the requested delivery"""
+        p = [parcel for parcel in self.db if parcel['id'] == id]
+        if not p:
+            return 404
+        elif p[0]['status'] is not "delivered":
+            p[0].update({"destination": destination})
+            return 201
+        else:
+            return 400

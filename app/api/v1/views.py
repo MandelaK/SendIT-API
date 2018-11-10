@@ -42,6 +42,40 @@ class SpecificParcel(Resource):
         return response, 200
 
 
+class Destination(Resource):
+    """This class represents how the destination of a parcel may
+    be manipulated"""
+
+    def put(self, id):
+        form = request.get_json()
+        try:
+            destination = form['destination']
+        except KeyError:
+            return {"Error": "Please enter a destination"}, 400
+        res = parcel_obj.change_destination(id, destination)
+        if res == 404:
+            return {"Error": "Parcel not found"}, 404
+        elif res == 201:
+            return {"Success": "Destination Successfully changed"}, 201
+        else:
+            return {"Error": "Something went wrong"}, 400
+
+
+class Admin(Resource):
+    """This class represents the admin and the methods they can perfom"""
+
+    def put(self, id):
+        """This method should be used to change the destination
+        of a delivery"""
+        form = request.get_json()
+        try:
+            location = form['location']
+        except KeyError:
+            return {"Please enter location"}, 400
+        parcel_obj.change_location(id, location)
+        return {"Success": "Current location has been updated"}, 201
+
+
 class Cancel(Resource):
     """This class is for cancelling a specific delivery order"""
 
