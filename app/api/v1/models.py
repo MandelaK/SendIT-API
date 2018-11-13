@@ -5,7 +5,8 @@
 # this is where all our parcels will be appended
 parcels = [
     {
-        "id": 1,
+        "parcel_id": 1,
+        "parcel_name": "Success cards",
         "sender": "Keith",
         "user_id": 100,
         "recipient": "Juma",
@@ -15,7 +16,8 @@ parcels = [
         "location": "Ruiru",
         "status": "pending"
     }, {
-        "id": 2,
+        "parcel_id": 2,
+        "parcel_name": "Divorce Letter",
         "sender": "John",
         "user_id": 101,
         "recipient": "Steve",
@@ -25,7 +27,8 @@ parcels = [
         "location": "Naivasha",
         "status": "pending"
     }, {
-        "id": 3,
+        "parcel_id": 3,
+        "parcel_name": "Job contract",
         "sender": "Keith",
         "user_id": 100,
         "recipient": "Peter",
@@ -43,10 +46,16 @@ class Parcel(object):
 
     def __init__(self):
         self.db = parcels
-        self.status = 'pending'
+        self.status = "pending"
 
-    def add_parcel(self, sender, user_id, recipient, destination, weight,
-                   pickup):
+    def return_valid_parcel(self, parcel_id):
+        p = [parcel for parcel in self.db if parcel["parcel_id"] == parcel_id]
+        if p:
+            return p[0]
+        return False
+
+    def add_parcel(self, sender, parcel_name, user_id, recipient, destination,
+                   weight, pickup):
         """The method to create a delivery and append
             it to our list"""
 
@@ -54,15 +63,16 @@ class Parcel(object):
         # validate it has enough information then add to payload
 
         data = {
-            'id': len(parcels) + 1,
-            'sender': sender,
-            'user_id': user_id,
-            'recipient': recipient,
-            'destination': destination,
-            'weight': weight,
-            'pickup': pickup,
-            'location': pickup,
-            'status': self.status
+            "parcel_id": len(parcels) + 1,
+            "sender": sender,
+            "parcel_name": parcel_name,
+            "user_id": user_id,
+            "recipient": recipient,
+            "destination": destination,
+            "weight": weight,
+            "pickup": pickup,
+            "location": pickup,
+            "status": self.status
         }
 
         self.db.append(data)
@@ -72,22 +82,22 @@ class Parcel(object):
         """Defines the method to get all parcel deliveries GET /parcels"""
         return self.db, 200
 
-    def get_parcel(self, id):
-        """Defines method to get a specific delivery with it's key
+    def get_parcel(self, parcel_id):
+        """Defines method to get a specific delivery with it"s key
          GET /parcels/<int:id>"""
-        p = [parcel for parcel in self.db if parcel['id'] == id]
-        if not p:
+        item = self.return_valid_parcel(parcel_id)
+        if not item:
             return 404
-        return p[0], 200
+        return item, 200
 
-    def cancel(self, id):
+    def cancel(self, parcel_id):
         """Defines the method for deleting a specific delivery from the
         database"""
-        p = [parcel for parcel in self.db if parcel['id'] == id]
-        if not p:
+        item = self.return_valid_parcel(parcel_id)
+        if not item:
             return 404
-        elif p[0]['status'] is not 'delivered':
-            p[0].update({"status": "cancelled"})
+        elif item["status"] is not "delivered":
+            item.update({"status": "cancelled"})
             return 200
         else:
             return 400
@@ -96,30 +106,39 @@ class Parcel(object):
         """"Defines the method for getting all deliveries from a specific
         sender"""
         orders = []
-        p = [parcel for parcel in self.db if parcel['user_id'] == user_id]
-        if p:
-            orders.append(p)
-            return orders, 200
-        else:
+        for parcel in self.db:
+            if parcel["user_id"] == user_id:
+                orders.append(parcel)
+        if orders == []:
             return 404
+        return orders
+        # items = [parcel for parcel in self.db if parcel["user_id"] == user_id]
+        # if items:
+        #     orders.append(items)
+        #     return orders, 200
+        # else:
+        #     return 404
 
-    def change_location(self, id, location):
+    def change_location(self, parcel_id, location):
         """Defines the method for changing the
         current location of a delivery"""
-        p = [parcel for parcel in self.db if parcel['id'] == id]
-        if not p:
+        item = self.return_valid_parcel(parcel_id)
+        if not item:
             return 404
         else:
-            p[0].update({"location": location})
+            item.update({"location": location})
             return 201
 
-    def change_destination(self, id, destination):
-        """We use this method to change the destination of the requested delivery"""
-        p = [parcel for parcel in self.db if parcel['id'] == id]
-        if not p:
+    def change_destination(self, parcel_id, destination):
+        """We use this method to change the destination of the
+        requested delivery"""
+        item = self.return_valid_parcel(parcel_id)
+        if not destination:
+            return {"Error": "Please add a destination"}
+        elif not item:
             return 404
-        elif p[0]['status'] is not "delivered":
-            p[0].update({"destination": destination})
+        elif item["status"] is not "delivered":
+            item.update({"destination": destination})
             return 201
         else:
             return 400
