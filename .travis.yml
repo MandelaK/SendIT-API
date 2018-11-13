@@ -12,6 +12,6 @@ install:
 script:
   - pytest --cov=app/
 
-after success:
+after_success:
   - coveralls
 
