@@ -1,4 +1,4 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/ecb041fb48b8fa903f2e/maintainability)](https://codeclimate.com/github/MandelaK/SendIT-API/maintainability)  [![Build Status](https://travis-ci.com/MandelaK/SendIT-API.svg?branch=ch-set-up-heroku-161863096)](https://travis-ci.com/MandelaK/SendIT-API)  
+[![Maintainability](https://api.codeclimate.com/v1/badges/ecb041fb48b8fa903f2e/maintainability)](https://codeclimate.com/github/MandelaK/SendIT-API/maintainability)  [![Build Status](https://travis-ci.com/MandelaK/SendIT-API.svg?branch=ch-set-up-heroku-161863096)](https://travis-ci.com/MandelaK/SendIT-API)  [![Coverage Status](https://coveralls.io/repos/github/MandelaK/SendIT-API/badge.svg?branch=ch-set-up-heroku-161863096)](https://coveralls.io/github/MandelaK/SendIT-API?branch=ch-set-up-heroku-161863096)
 
 # SendIT-API
 
