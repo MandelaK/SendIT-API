@@ -17,6 +17,78 @@ parcel = {
     "status": "delivered"
 }
 
+no_sender_name = {
+    "parcel_id": 2,
+    "sender": "",
+    "parcel_name": "Trial",
+    "user_id": 100,
+    "recipient": "Jane",
+    "destination": "Heaven",
+    "weight": "69",
+    "pickup": "Hell",
+    "location": "Hell",
+
+}
+
+no_parcel_name = {
+    "parcel_id": 1,
+    "sender": "Mandela",
+    "parcel_name": "",
+    "user_id": 100,
+    "recipient": "Jane",
+    "destination": "Heaven",
+    "weight": "69",
+    "pickup": "Hell",
+    "location": "Hell",
+}
+
+no_weight = {
+    "parcel_id": 1,
+    "sender": "Mandela",
+    "parcel_name": "Trial",
+    "user_id": 100,
+    "recipient": "Jane",
+    "destination": "Heaven",
+    "weight": "",
+    "pickup": "Hell",
+    "location": "Hell",
+}
+
+no_destination = {
+    "parcel_id": 1,
+    "sender": "Mandela",
+    "parcel_name": "Trial",
+    "user_id": 100,
+    "recipient": "Jane",
+    "destination": "",
+    "weight": "69",
+    "pickup": "Hell",
+    "location": "Hell",
+}
+
+fake_location = {
+    "parcel_id": 1,
+    "sender": "Mandela",
+    "parcel_name": "Trial",
+    "user_id": 100,
+    "recipient": "Jane",
+    "destination": "",
+    "weight": "69",
+    "pickup": "Hell",
+    "location": "2342342",
+}
+
+no_sender = {
+    "parcel_id": 1,
+    "parcel_name": "Trial",
+    "user_id": 100,
+    "recipient": "Jane",
+    "destination": "",
+    "weight": "69",
+    "pickup": "Hell",
+    "location": "2342342"
+}
+
 
 class ParcelTestCase(unittest.TestCase):
 
@@ -26,8 +98,6 @@ class ParcelTestCase(unittest.TestCase):
         self.client = app.test_client(self)
         self.app.testing = True
         self.parcel = parcel
-        # self.app_context = self.app.app_context()
-        # self.app_context.push()
 
 
 class TestValidRequest(ParcelTestCase):
@@ -41,26 +111,21 @@ class TestValidRequest(ParcelTestCase):
 
     def test_we_get_all_parcels(self):
         """Test GET /parcels to see if we can get all orders"""
-        res = self.client.get("/api/v1/parcels", data=json.dumps(self.parcel),
-                              content_type="application/json")
+        res = self.client.get("/api/v1/parcels")
         self.assertEqual(res.status_code, 200)
 
     def test_we_can_cancel_parcel(self):
         """Test PUT /parcels/id/cancel to see if we can cancel specific
         parcel"""
-        res = self.client.put("/api/v1/parcels/1/cancel",
-                              data=json.dumps(self.parcel),
-                              content_type="application/json")
+        res = self.client.put("/api/v1/parcels/1/cancel")
         self.assertEqual(res.status_code, 200)
 
     def test_we_get_specific_parcel_we_requested(self):
-        res = self.client.get("/api/v1/parcels/1", data=json.dumps(self.parcel),
-                              content_type="application/json")
+        res = self.client.get("/api/v1/parcels/1")
         self.assertEqual(res.status_code, 200)
 
     def test_we_can_get_parcels_by_one_user(self):
-        res = self.client.get("/api/v1/users/100/parcels", data=json.dumps(self.parcel),
-                              content_type="application/json")
+        res = self.client.get("/api/v1/users/100/parcels")
         self.assertEqual(res.status_code, 200)
 
     def test_we_successfully_change_location(self):
@@ -79,8 +144,7 @@ class TestInvalidRequest(ParcelTestCase):
     """From this class, we will test what happens when the user enters invalid input"""
 
     def test_user_cannot_get_parcel_that_does_not_exist(self):
-        res = self.client.get("/api/v1/parcels/10", data=json.dumps(self.parcel),
-                              content_type="application/json")
+        res = self.client.get("/api/v1/parcels/10")
         self.assertEqual(res.status_code, 404)
 
     def test_user_can_change_destination_of_parcels_that_only_exist(self):
@@ -88,79 +152,32 @@ class TestInvalidRequest(ParcelTestCase):
                               data=json.dumps(self.parcel), content_type="application/json")
         self.assertEqual(res.status_code, 404)
 
-    def test_user_can_change_destination_of_parcels_in_transit_only(self):
-        res = self.client.put("/api/v1/parcels/1/destination", data=json.dumps(self.parcel),
-                              content_type="application/json")
+    def test_user_must_add_destination_when_making_order(self):
+        res = self.client.post(
+            "/api/v1/parcels", data=json.dumps(no_destination), content_type="application/json")
         self.assertEqual(res.status_code, 400)
 
-    # def test_we_return_error_if_user_sends_string_as_id(self):
-    #     pass
+    def test_user_must_include_weight_when_making_order(self):
+        res = self.client.post(
+            "/api/v1/parcels", data=json.dumps(no_weight), content_type="application/json")
+        self.assertEqual(res.status_code, 400)
 
-    # def test_we_return_404_if_parcel_id_does_not_exist(self):
-    #     pass
+    def test_user_must_enter_parcel_name(self):
+        res = self.client.post(
+            "/api/v1/parcels", data=json.dumps(no_parcel_name), content_type="application/json")
+        self.assertEqual(res.status_code, 400)
 
-    # # we test our SpecificParcel.post() method
-    # def test_we_return_bad_request_if_user_doesnt_send_request_in_json(self):
-    #     pass
+    def test_user_must_add_sender_name(self):
+        res = self.client.post(
+            "/api/v1/parcels", data=json.dumps(no_sender_name), content_type="application/json")
+        self.assertEqual(res.status_code, 400)
 
-    # def test_we_return_bad_request_if_user_is_missing_sender_key(self):
-    #     pass
+    def test_user_enters_numbers_in_location(self):
+        res = self.client.post(
+            "/api/v1/parcels", data=json.dumps(fake_location), content_type="application/json")
+        self.assertEqual(res.status_code, 400)
 
-    # def test_we_return_bad_request_if_user_is_missing_destination_key(self):
-    #     pass
-
-    # def test_we_return_bad_request_if_user_is_missing_pickup_key(self):
-    #     pass
-
-    # def test_we_return_bad_request_if_user_is_missing_recipient_key(self):
-    #     pass
-
-    # def test_we_return_bad_request_if_user_is_missing_weight_key(self):
-    #     pass
-
-    # def test_we_return_201_on_successful_creation_of_submitted_delivery(self):
-    #     pass
-
-    # def test_return_error_if_user_not_logged_in_try_to_create_delivery(self):
-    #     pass
-
-    # def test_test_if_id_is_added_to_all_appended_requests(self):
-    #     pass
-
-    # # we test our SpecificParcel.put(id) method
-    # def test_return_bad_request_if_user_is_missing_new_destination_key(self):
-    #     pass
-
-    # def test_we_return_bad_request_if_user_is_missing_id(self):
-    #     pass
-
-    # def test_we_return_error_if_user_does_not_have_authentication(self):
-    #     pass
-
-    # def test_we_return_bad_request_if_request_not_sent_in_json(self):
-    #     pass
-
-    # def test_we_return_bad_request_if_id_not_found_in_request(self):
-    #     pass
-
-    # def test_we_return_forbidden_if_delivery_status_not_in_transit(self):
-    #     pass
-
-    # def test_we_append_modified_delivery_in_our_database(self):
-    #     pass
-
-    # def test_we_return_modified_delivery_to_user_with_relevant_code(self):
-    #     pass
-
-    # def test_ensure_destination_key_is_string(self):
-    #     pass
-
-    # # we test the SpecificParcel.delete(id)
-    # def test_we_return_bad_request_if_no_id_is_provided(self):
-    #     pass
-
-    # def test_we_return_error_if_user_not_authorized(self):
-    #     pass
-
-    # def test_we_delete_the_delivery_sent_by_user(self):
-    #     pass
+    def test_user_does_not_include_sender_at_all(self):
+        res = self.client.post(
+            "/api/v1/parcels", data=json.dumps(no_sender), content_type="application/json")
+        self.assertEqual(res.status_code, 400)
