@@ -6,6 +6,30 @@ from flask import request
 parcel_obj = Parcel()
 
 
+def validate_string(word):
+    """This function validates strings that we get from
+    the user before we add the values to our database"""
+    if type(word) is not str:
+        return False
+    elif bool(word.strip()) is False:
+        return False
+    elif validate_int(word):
+        return False
+    else:
+        return True
+
+
+def validate_int(number):
+    """This function validates the numbers we get from
+    the user before we can add them to our database"""
+    try:
+        int(number)
+    except ValueError:
+        return False
+    else:
+        return True
+
+
 class GenericParcel(Resource):
     """This class contains generic parcels without
     any specificity."""
@@ -35,6 +59,31 @@ class GenericParcel(Resource):
         """This method is for adding a delivery to our database."""
         parcel_data = self.inspect.parse_args()
 
+        sender = parcel_data.get("sender")
+        parcel_name = parcel_data.get("parcel_name")
+        user_id = parcel_data.get("user_id")
+        recipient = parcel_data.get("recipient")
+        destination = parcel_data.get("destination")
+        weight = parcel_data.get("weight")
+        pickup = parcel_data.get("pickup")
+
+        # we validate all input from the user before sending it over to
+        # our models
+        if not validate_string(sender):
+            return {"Error": "Please enter a valid sender name"}, 400
+        elif not validate_string(parcel_name):
+            return {"Error": "Please enter a valid parcel name"}, 400
+        elif not validate_string(recipient):
+            return {"Error": "Please enter a valid recipient name"}, 400
+        elif not validate_string(destination):
+            return {"Error": "Please enter valid destination"}, 400
+        elif not validate_string(pickup):
+            return {"Error": "Please enter valid pickup location"}, 400
+        elif not validate_int(weight):
+            return {"Error": "Please enter weight (in numbers)"}, 400
+        elif not validate_int(user_id):
+            return {"Error": "Please enter valid user id"}, 400
+
         response = parcel_obj.add_parcel(parcel_data['sender'],
                                          parcel_data['parcel_name'],
                                          parcel_data['user_id'],
@@ -51,7 +100,11 @@ class SpecificParcel(Resource):
 
     def get(self, parcel_id):
         """This method should return a parcel if we are sent it's id"""
-        response = parcel_obj.get_parcel(parcel_id)
+        url = validate_int(parcel_id)
+        if url:
+            response = parcel_obj.get_parcel(parcel_id)
+        else:
+            return {"Error": "Please enter valid url"}
         if response == 404:
             return {"Error": "Parcel does not exist"}, 404
         return response
@@ -70,18 +123,6 @@ class User(Resource):
             return items
 
 
-def valid_location(location):
-    """This function verifies that location entered is valid"""
-    if type(location) == int:
-        return False
-    elif bool(location.strip()) is False:
-        return False
-    elif location.isalpha() is False:
-        return False
-    else:
-        return True
-
-
 class Destination(Resource):
     """This class represents how the destination of a parcel may
     be manipulated"""
@@ -92,7 +133,7 @@ class Destination(Resource):
             destination = form['destination']
         except KeyError:
             return {"Error": "Please enter a destination"}, 400
-        verify_location = valid_location(destination)
+        verify_location = validate_string(destination)
         if not verify_location:
             return {"Error": "Please enter a valid destination"}, 400
         else:
@@ -116,7 +157,7 @@ class Admin(Resource):
             location = form['location']
         except KeyError:
             return {"Error": "Please enter location"}, 400
-        verify_location = valid_location(location)
+        verify_location = validate_string(location)
         if not verify_location:
             return {"Error": "Please enter a valid location"}
         else:

@@ -112,12 +112,6 @@ class Parcel(object):
         if orders == []:
             return 404
         return orders
-        # items = [parcel for parcel in self.db if parcel["user_id"] == user_id]
-        # if items:
-        #     orders.append(items)
-        #     return orders, 200
-        # else:
-        #     return 404
 
     def change_location(self, parcel_id, location):
         """Defines the method for changing the
