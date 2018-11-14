@@ -5,15 +5,16 @@ from run import app
 
 
 parcel = {
-    'id': 1,
-    'sender': 'Mandela',
-    'user_id': 100,
-    'recipient': 'Jane',
-    'destination': 'Heaven',
-    'weight': '69',
-    'pickup': 'Hell',
-    'location': 'Hell',
-    'status': 'pending'
+    "parcel_id": 1,
+    "sender": "Mandela",
+    "parcel_name": "Trial",
+    "user_id": 100,
+    "recipient": "Jane",
+    "destination": "Heaven",
+    "weight": "69",
+    "pickup": "Hell",
+    "location": "Hell",
+    "status": "delivered"
 }
 
 
@@ -25,8 +26,8 @@ class ParcelTestCase(unittest.TestCase):
         self.client = app.test_client(self)
         self.app.testing = True
         self.parcel = parcel
-        self.app_context = self.app.app_context()
-        self.app_context.push()
+        # self.app_context = self.app.app_context()
+        # self.app_context.push()
 
 
 class TestValidRequest(ParcelTestCase):
@@ -35,46 +36,62 @@ class TestValidRequest(ParcelTestCase):
     def test_we_successfully_create_order(self):
         """This will test POST /parcels"""
         res = self.client.post(
-            'api/v1/parcels', data=json.dumps(self.parcel), content_type='application/json')
+            "api/v1/parcels", data=json.dumps(self.parcel), content_type="application/json")
         self.assertEqual(res.status_code, 201)
 
     def test_we_get_all_parcels(self):
         """Test GET /parcels to see if we can get all orders"""
-        res = self.client.get('/api/v1/parcels', data=json.dumps(self.parcel),
-                              content_type='application/json')
+        res = self.client.get("/api/v1/parcels", data=json.dumps(self.parcel),
+                              content_type="application/json")
         self.assertEqual(res.status_code, 200)
 
     def test_we_can_cancel_parcel(self):
         """Test PUT /parcels/id/cancel to see if we can cancel specific
         parcel"""
-        res = self.client.put('/api/v1/parcels/1/cancel',
+        res = self.client.put("/api/v1/parcels/1/cancel",
                               data=json.dumps(self.parcel),
-                              content_type='application/json')
+                              content_type="application/json")
         self.assertEqual(res.status_code, 200)
 
     def test_we_get_specific_parcel_we_requested(self):
-        res = self.client.get('/api/v1/parcels/1', data=json.dumps(self.parcel),
-                              content_type='application/json')
+        res = self.client.get("/api/v1/parcels/1", data=json.dumps(self.parcel),
+                              content_type="application/json")
         self.assertEqual(res.status_code, 200)
 
     def test_we_can_get_parcels_by_one_user(self):
-        res = self.client.get('/api/v1/users/100/parcels', data=json.dumps(self.parcel),
-                              content_type='application/json')
+        res = self.client.get("/api/v1/users/100/parcels", data=json.dumps(self.parcel),
+                              content_type="application/json")
         self.assertEqual(res.status_code, 200)
 
     def test_we_successfully_change_location(self):
-        res = self.client.put('/api/v1/admin/location/1', data=json.dumps(self.parcel),
-                              content_type='application/json')
+        res = self.client.put("/api/v1/admin/location/1", data=json.dumps(self.parcel),
+                              content_type="application/json")
         self.assertEqual(res.status_code, 201)
 
     def test_we_can_change_destination(self):
-        res = self.client.put('/api/v1/parcels/1/destination',
+        res = self.client.put("/api/v1/parcels/1/destination",
                               data=json.dumps(self.parcel),
-                              content_type='application/json')
+                              content_type="application/json")
         self.assertEqual(res.status_code, 201)
 
-    # def test_we_return_parcel_with_correct_id(self):
-    #     pass
+
+class TestInvalidRequest(ParcelTestCase):
+    """From this class, we will test what happens when the user enters invalid input"""
+
+    def test_user_cannot_get_parcel_that_does_not_exist(self):
+        res = self.client.get("/api/v1/parcels/10", data=json.dumps(self.parcel),
+                              content_type="application/json")
+        self.assertEqual(res.status_code, 404)
+
+    def test_user_can_change_destination_of_parcels_that_only_exist(self):
+        res = self.client.put("/api/v1/parcels/10/destination",
+                              data=json.dumps(self.parcel), content_type="application/json")
+        self.assertEqual(res.status_code, 404)
+
+    def test_user_can_change_destination_of_parcels_in_transit_only(self):
+        res = self.client.put("/api/v1/parcels/1/destination", data=json.dumps(self.parcel),
+                              content_type="application/json")
+        self.assertEqual(res.status_code, 400)
 
     # def test_we_return_error_if_user_sends_string_as_id(self):
     #     pass
