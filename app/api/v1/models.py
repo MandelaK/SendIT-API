@@ -12,6 +12,7 @@ parcels = [
         "recipient": "Juma",
         "destination": "Nairobi",
         "weight": "500",
+        "price": "1500",
         "pickup": "Ruiru",
         "location": "Ruiru",
         "status": "pending"
@@ -23,6 +24,7 @@ parcels = [
         "recipient": "Steve",
         "destination": "Kiambu",
         "weight": "920",
+        "price": "2760",
         "pickup": "Naivasha",
         "location": "Naivasha",
         "status": "pending"
@@ -34,6 +36,7 @@ parcels = [
         "recipient": "Peter",
         "destination": "Vihiga",
         "weight": "900",
+        "price": "2700",
         "pickup": "Kericho",
         "location": "Vihiga",
         "status": "delivered"
@@ -70,6 +73,7 @@ class Parcel(object):
             "recipient": recipient,
             "destination": destination,
             "weight": weight,
+            "price": int(weight) * 3,
             "pickup": pickup,
             "location": pickup,
             "status": self.status

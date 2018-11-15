@@ -38,6 +38,7 @@ no_parcel_name = {
     "recipient": "Jane",
     "destination": "Heaven",
     "weight": "69",
+    "price": "207",
     "pickup": "Hell",
     "location": "Hell",
 }
@@ -50,6 +51,7 @@ no_weight = {
     "recipient": "Jane",
     "destination": "Heaven",
     "weight": "",
+    "price": "",
     "pickup": "Hell",
     "location": "Hell",
 }
@@ -85,6 +87,18 @@ no_sender = {
     "recipient": "Jane",
     "destination": "",
     "weight": "69",
+    "pickup": "Hell",
+    "location": "2342342"
+}
+
+weight_is_zero = {
+    "parcel_id": 1,
+    "parcel_name": "Trial",
+    "user_id": 100,
+    "recipient": "Jane",
+    "destination": "Hell",
+    "weight": "0",
+    "price": "23",
     "pickup": "Hell",
     "location": "2342342"
 }
@@ -180,4 +194,9 @@ class TestInvalidRequest(ParcelTestCase):
     def test_user_does_not_include_sender_at_all(self):
         res = self.client.post(
             "/api/v1/parcels", data=json.dumps(no_sender), content_type="application/json")
+        self.assertEqual(res.status_code, 400)
+
+    def test_weight_cannot_be_zero(self):
+        res = self.client.post(
+            "/api/v1/parcels", data=json.dumps(weight_is_zero), content_type="application/json")
         self.assertEqual(res.status_code, 400)

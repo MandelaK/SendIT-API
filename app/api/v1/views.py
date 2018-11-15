@@ -27,6 +27,8 @@ def validate_int(number):
     except ValueError:
         return False
     else:
+        if int(number) <= 0:
+            return False
         return True
 
 
@@ -80,7 +82,7 @@ class GenericParcel(Resource):
         elif not validate_string(pickup):
             return {"Error": "Please enter valid pickup location"}, 400
         elif not validate_int(weight):
-            return {"Error": "Please enter weight (in numbers)"}, 400
+            return {"Error": "Weight must be greater than zero and in numbers."}, 400
         elif not validate_int(user_id):
             return {"Error": "Please enter valid user id"}, 400
 
