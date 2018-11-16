@@ -145,7 +145,7 @@ class Destination(Resource):
         elif res == 201:
             return {"Success": "Destination Successfully changed"}, 201
         else:
-            return {"Error": "Parcel already delivered"}, 400
+            return {"Error": "Parcel not in transit"}, 400
 
 
 class Admin(Resource):
@@ -161,14 +161,15 @@ class Admin(Resource):
             return {"Error": "Please enter location"}, 400
         verify_location = validate_string(location)
         if not verify_location:
-            return {"Error": "Please enter a valid location"}
+            return {"Error": "Please enter a valid location"}, 400
         else:
             res = parcel_obj.change_location(parcel_id, location)
 
         if res == 201:
             return {"Success": "Current location has been updated"}, 201
-        else:
-            return 404
+        elif res == 400:
+            return {"Error": "Parcel not in trasit"}, 400
+        return 404
 
 
 class Cancel(Resource):
@@ -178,8 +179,8 @@ class Cancel(Resource):
         """This method is for cancelling a specific delivery"""
         response = parcel_obj.cancel(parcel_id)
         if response == 200:
-            return {"Success": "Delivery {} was cancelled".format(parcel_id)}
+            return {"Success": "Delivery {} was cancelled".format(parcel_id)}, 201
         elif response == 400:
-            return {"Error": "Parcel has already been delivered."}
+            return {"Error": "Parcel not in transit"}
         else:
             return {"Error": "Parcel not found"}
