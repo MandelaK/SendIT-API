@@ -15,7 +15,7 @@ parcels = [
         "price": "1500",
         "pickup": "Ruiru",
         "location": "Ruiru",
-        "status": "pending"
+        "status": "transit"
     }, {
         "parcel_id": 2,
         "parcel_name": "Divorce Letter",
@@ -27,7 +27,7 @@ parcels = [
         "price": "2760",
         "pickup": "Naivasha",
         "location": "Naivasha",
-        "status": "pending"
+        "status": "cancelled"
     }, {
         "parcel_id": 3,
         "parcel_name": "Job contract",
@@ -49,7 +49,7 @@ class Parcel(object):
 
     def __init__(self):
         self.db = parcels
-        self.status = "pending"
+        self.status = "transit"
 
     def return_valid_parcel(self, parcel_id):
         p = [parcel for parcel in self.db if parcel["parcel_id"] == parcel_id]
@@ -100,7 +100,7 @@ class Parcel(object):
         item = self.return_valid_parcel(parcel_id)
         if not item:
             return 404
-        elif item["status"] is not "delivered":
+        elif item["status"] is "transit":
             item.update({"status": "cancelled"})
             return 200
         else:
@@ -123,17 +123,17 @@ class Parcel(object):
         item = self.return_valid_parcel(parcel_id)
         if not item:
             return 404
-        else:
+        elif item["status"] is not "delivered":
             item.update({"location": location})
             return 201
+        else:
+            return 400
 
     def change_destination(self, parcel_id, destination):
         """We use this method to change the destination of the
         requested delivery"""
         item = self.return_valid_parcel(parcel_id)
-        if not destination:
-            return {"Error": "Please add a destination"}
-        elif not item:
+        if not item:
             return 404
         elif item["status"] is not "delivered":
             item.update({"destination": destination})

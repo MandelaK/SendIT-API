@@ -161,14 +161,15 @@ class Admin(Resource):
             return {"Error": "Please enter location"}, 400
         verify_location = validate_string(location)
         if not verify_location:
-            return {"Error": "Please enter a valid location"}
+            return {"Error": "Please enter a valid location"}, 400
         else:
             res = parcel_obj.change_location(parcel_id, location)
 
         if res == 201:
             return {"Success": "Current location has been updated"}, 201
-        else:
-            return 404
+        elif res == 400:
+            return {"Error": "Parcel not in trasit"}, 400
+        return 404
 
 
 class Cancel(Resource):
