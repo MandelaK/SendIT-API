@@ -132,7 +132,7 @@ class TestValidRequest(ParcelTestCase):
         """Test PUT /parcels/id/cancel to see if we can cancel specific
         parcel"""
         res = self.client.put("/api/v1/parcels/1/cancel")
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)
 
     def test_we_get_specific_parcel_we_requested(self):
         res = self.client.get("/api/v1/parcels/1")
