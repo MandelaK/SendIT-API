@@ -14,7 +14,7 @@ parcel = {
     "weight": "69",
     "pickup": "Hell",
     "location": "Hell",
-    "status": "delivered"
+    "status": "transit"
 }
 
 no_sender_name = {
@@ -145,6 +145,8 @@ class TestValidRequest(ParcelTestCase):
     def test_we_successfully_change_location(self):
         res = self.client.put("/api/v1/admin/location/1", data=json.dumps(self.parcel),
                               content_type="application/json")
+        print(self.parcel)
+        print(res)
         self.assertEqual(res.status_code, 201)
 
     def test_we_can_change_destination(self):
