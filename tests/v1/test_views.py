@@ -74,10 +74,9 @@ fake_location = {
     "parcel_name": "Trial",
     "user_id": 100,
     "recipient": "Jane",
-    "destination": "",
+    "destination": "there",
     "weight": "69",
-    "pickup": "Hell",
-    "location": "2342342",
+    "pickup": "34232"
 }
 
 no_sender = {
@@ -85,7 +84,7 @@ no_sender = {
     "parcel_name": "Trial",
     "user_id": 100,
     "recipient": "Jane",
-    "destination": "",
+    "destination": "there",
     "weight": "69",
     "pickup": "Hell",
     "location": "2342342"
@@ -101,6 +100,41 @@ weight_is_zero = {
     "price": "23",
     "pickup": "Hell",
     "location": "2342342"
+}
+
+invalid_user_id = {
+    "parcel_id": 1,
+    "parcel_name": "Trial",
+    "user_id": "john",
+    "recipient": "Jane",
+    "destination": "Hell",
+    "weight": "4",
+    "price": "23",
+    "pickup": "Hell",
+    "location": "here"
+}
+
+recipient_is_int = {
+    "parcel_id": 1,
+    "parcel_name": "Trial",
+    "user_id": 123,
+    "recipient": "234234",
+    "destination": "Hell",
+    "weight": "4",
+    "price": "23",
+    "pickup": "Hell",
+    "location": "here"
+}
+
+weight_is_missing = {
+    "parcel_id": 1,
+    "parcel_name": "Trial",
+    "user_id": 234,
+    "recipient": "Jane",
+    "destination": "Hell",
+    "price": "23",
+    "pickup": "Hell",
+    "location": "here"
 }
 
 
@@ -188,7 +222,7 @@ class TestInvalidRequest(ParcelTestCase):
             "/api/v1/parcels", data=json.dumps(no_sender_name), content_type="application/json")
         self.assertEqual(res.status_code, 400)
 
-    def test_user_enters_numbers_in_location(self):
+    def test_user_enters_numbers_in_pickup(self):
         res = self.client.post(
             "/api/v1/parcels", data=json.dumps(fake_location), content_type="application/json")
         self.assertEqual(res.status_code, 400)
@@ -201,4 +235,14 @@ class TestInvalidRequest(ParcelTestCase):
     def test_weight_cannot_be_zero(self):
         res = self.client.post(
             "/api/v1/parcels", data=json.dumps(weight_is_zero), content_type="application/json")
+        self.assertEqual(res.status_code, 400)
+
+    def test_cannot_use_invalid_user_ID(self):
+        res = self.client.post(
+            "/api/v1/parcels", data=json.dumps(invalid_user_id), content_type="application/json")
+        self.assertEqual(res.status_code, 400)
+
+    def test_recipient_name_must_be_valid_string(self):
+        res = self.client.post(
+            "/api/v1/parcels", data=json.dumps(recipient_is_int), content_type="application/json")
         self.assertEqual(res.status_code, 400)
